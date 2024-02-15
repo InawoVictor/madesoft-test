@@ -11,7 +11,6 @@ export default defineNuxtConfig({
 
   css: [
     '~/assets/css/main.css',
-    'primevue/resources/themes/aura-light-green/theme.css',
   ],
   autoImports: {
     dirs: ["./stores"],

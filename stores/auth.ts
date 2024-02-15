@@ -1,7 +1,5 @@
 import { defineStore } from "pinia";
 import { ref, Ref } from 'vue';
-// import { useToast } from "primevue/usetoast";
-// const toast = useToast();
 
 interface User {
   // Define the properties of your user object
@@ -21,6 +19,8 @@ interface LoginPayload {
 
 export const useAuthStore = defineStore("auth", () => {
   const user: Ref<User | {}> = ref({});
+  const isError = ref(false)
+  const { $toast } = useNuxtApp()
 
   async function registerUser(payload: RegisterPayload): Promise<void> {
     try {
@@ -32,27 +32,19 @@ export const useAuthStore = defineStore("auth", () => {
             },
             body: JSON.stringify(payload),
         });
-
-        // Check if the registration was successful (status code 2xx)
-        if (response.ok) {
-            // Parse the response JSON
-            const data = await response.json();
-
-            console.log('Registration successful:', data);
-
-            
-        } else {
-            // Handle non-2xx status codes
-            console.log('Registration failed');
-
-            
-        }
+        
+        // Parse the response JSON
+        user.value = await response.json();
+        isError.value = false
+        
+        $toast.success("Registration Successful!")
+        
     } catch (error) {
         // Handle unexpected errors
-        console.log('An error occured:', error);
+        isError.value = true
+        $toast.error("Something went wrong!")
 
         
-        // toast.add({ severity: 'error', summary: 'Something went wrong', detail: 'Message Content', life: 3000 });
     }
 }
 
@@ -64,29 +56,21 @@ export const useAuthStore = defineStore("auth", () => {
             body: JSON.stringify(payload),
         });
 
-        // Check if the request was successful (status code 2xx)
-        if (response.ok) {
-            // Parse the response JSON
-            const data = await response.json();
+        // Parse the response JSON
+        const data = await response.json();
 
-            // Update the user value
-            user.value = data;
+        // Update the user value
+        user.value = data;
 
-            // Save user data to local storage
-            localStorage.setItem('userAuth', JSON.stringify(data));
+        // Save user data to local storage
+        localStorage.setItem('userAuth', JSON.stringify(data));
 
-            // Log the user value
-            console.log('User:', user.value);
+        // Log the user value
+        // console.log('User:', user.value);
+        $toast.success("User has been signed in")
 
-            // toast.add({ severity: 'success', summary: 'Signed in User', detail: 'Message Content', life: 3000 });
-        } else {
-            console.log('Something went wrong ');
-
-
-            // toast.add({ severity: 'error', summary: 'Error occurred', detail: 'Message Content', life: 3000 });
-        }
     } catch (error) {
-        console.log('An error occured', error);
+        $toast.error("Something went wrong😔! try again")
 
     }
 }
@@ -94,6 +78,7 @@ export const useAuthStore = defineStore("auth", () => {
 
   return {
     user,
+    isError,
     registerUser,
     loginUser,
   };

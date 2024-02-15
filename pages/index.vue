@@ -1,6 +1,6 @@
 <template>
     <div class="w-full bg bg-white h-screen flex">        
-        <img :src="currentStep  >= 2 ? '/img/face.png' : '/img/sign-up.png'" class="w-[600px]  " >
+        <img :src="currentStep  >= 2 ? '/img/face.png' : '/img/sign-up.png'" class=" w-[550px] object-cover" >
         
         <div class="py-16  h-full flex-1  ">
             <div class="w-[80%] mx-auto">
@@ -10,22 +10,22 @@
                   <div v-for="(step, index) in steps" :key="index" :class="{ active: currentStep === index + 1 }">
                     <div class="flex justify-between items-center mt-4 relative">
                       <span class="line"></span>
-                      <button @click="prevStep" 
+                      <button @click="nextStep(1)" 
                       class="btn flex justify-center items-center"
                       >
                       <span class="w-[20px] h-[20px] rounded-full bg-[#041768]"></span>
                     </button>
-                      <button @click="nextStep " class="btn flex justify-center items-center"> 
+                      <button @click="nextStep(2) " class="btn flex justify-center items-center"> 
                         <span v-if="currentStep >= 2" class="w-[20px] h-[20px] rounded-full bg-[#041768]"></span>
                       </button>
-                      <button @click="nextStep" class="btn flex justify-center items-center">
+                      <button @click="nextStep(3)" class="btn flex justify-center items-center">
                         <span v-if="currentStep >= 3"  class="w-[20px] h-[20px] rounded-full bg-[#041768]"></span>
                       </button>
                     </div>
                   </div>
                 </div>
 
-                <form class="mt-4 flex flex-col gap-y-2 w-full"  v-if="currentStep === 1">
+                <form class="mt-4 flex flex-col gap-y-2 w-full" @submit.prevent="register"  v-if="currentStep === 1">
                     <div class="flex gap-x-2">
                         <InputTextField type="text" class="flex-1" v-model="fullName" :required="true" label="Full Name" placeholder="Input your fullname" />
                         <InputTextField type="text" class="flex-1" v-model="username" :required="true" label="Username" placeholder="Input your username in here" />
@@ -37,7 +37,7 @@
                         <span class="text-[#92929D] text-sm">I have read and agree to the term of service</span>
                     </span>
                     <div class="mt-6 flex justify-between items-center">
-                        <button type="submit" class="button" @click="nextStep">
+                        <button type="submit" class="button" >
                             Create account
                         </button>
                         <span class="text-[#92929D] text-sm">
@@ -72,7 +72,7 @@
                     <InputTextField type="text" v-model="about" label="About" placeholder="Tell us About yourself" />
                     <InputTextField type="text" v-model="specialties" label="Your Specialties" placeholder="What are your specialties" />
 
-                    <button @click="register" type="submit" class=" mt-3 button self-start" >
+                    <button @click="nextStep(3)" type="submit" class=" mt-3 button self-start" >
                         Next
                     </button>
                 </form>
@@ -114,11 +114,9 @@ const steps = [
   { title: 'Step 3', description: 'Description for Step 3' },
 ];
 
-const nextStep = () => {
-  if (currentStep.value < steps.length ){
-    currentStep.value++;
-  } 
-  return currentStep.value
+const nextStep = (step: number) => {
+    currentStep.value = step
+  
 };
 
 const prevStep = () => {
@@ -136,7 +134,9 @@ const register =  async () => {
     password: password.value,
   }
   await auth.registerUser(payload)
-  nextStep()
+  if(!auth.isError) {
+    nextStep(2)
+  }
 }
 
 const handleFileChange = (event) => {

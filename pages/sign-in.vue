@@ -1,13 +1,13 @@
 <template>
     <div class="w-full bg bg-white h-screen flex">        
-        <img src="/img/face.png" class="w-[600px]  ">
+        <img src="/img/face.png" class=" w-[550px] object-cover">
         
         <div class="py-20  h-full flex-1  ">
             <div class="w-[80%] mx-auto">
                 <h1 class="text-3xl font-bold ">Sign in</h1>
                 <form class="mt-4 flex flex-col gap-y-2" @submit.prevent="login">
-                    <InputTextField type="email" v-model="email" label="Email" placeholder="Input your email in here" />
-                    <InputTextField :type="isPassword ? 'password': 'text'" v-model="password" :password="true" @changeType="isPassword = !isPassword" label="Password" placeholder="Input your password in here" />
+                    <InputTextField type="email" v-model="email" label="Email" :error="error" :required="true" placeholder="Input your email in here" />
+                    <InputTextField :type="isPassword ? 'password': 'text'" :error="error" v-model="password" :required="true" :password="true" @changeType="isPassword = !isPassword" label="Password" placeholder="Input your password in here" />
                     <div class="flex justify-between items-center mt-2">
                         <div>
                             <input type="checkbox" v-model="rememberMe"> &nbsp;
@@ -38,6 +38,7 @@ const password = ref("")
 const email = ref("")
 const rememberMe = ref(false)
 const isPassword = ref(false)
+const error = ref(false);
 
 const login = async () => {
    let payload = {
@@ -45,8 +46,15 @@ const login = async () => {
         email: email.value
    }
 
-    await auth.loginUser(payload);
-    console.log("hello");
+   if(password.value !== "" || email.value !== ""){
+        try{
+            await auth.loginUser(payload);
+        } catch {
+
+        }
+    } else {
+        error.value =true
+    }
     
 }
 </script>

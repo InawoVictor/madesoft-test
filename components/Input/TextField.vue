@@ -16,7 +16,7 @@
             />
             <Icon
             v-if="password"
-            class="mdi absolute top-[55%]  text-black right-4 cursor-pointer"
+            class="mdi absolute top-[55%]  text-slate-600 right-4 cursor-pointer"
             :class="{ 'err-message': error }"
             :name="type === 'password' ? 'mdi:eye-off-outline' : 'mdi:eye-outline'"
             @click="$emit('changeType')"
